@@ -46,7 +46,7 @@ const EnergyTrends: React.FC<EnergyTrendsProps> = ({ entries }) => {
     const entryMap = new Map<string, JournalEntry>();
     entries.forEach(e => entryMap.set(e.date, e));
 
-    let data: { label: string; value: number; color: string; date: string }[] = [];
+    let data: { label: string; value: number; color: string; date: string; fullDate?: string }[] = [];
     let rangeLabel = '';
 
     if (timeframe === 'week') {
@@ -67,7 +67,8 @@ const EnergyTrends: React.FC<EnergyTrendsProps> = ({ entries }) => {
           label: daysOfWeek[i],
           value: entry ? entry.energy : 0,
           color: entry ? ENERGY_META[entry.energy].color : '#f1f5f9',
-          date: dateStr
+          date: dateStr,
+          fullDate: d.toLocaleDateString('vi-VN')
         });
       }
     } else if (timeframe === 'month') {
@@ -86,7 +87,8 @@ const EnergyTrends: React.FC<EnergyTrendsProps> = ({ entries }) => {
           label: i.toString(),
           value: entry ? entry.energy : 0,
           color: entry ? ENERGY_META[entry.energy].color : '#f1f5f9',
-          date: dateStr
+          date: dateStr,
+          fullDate: d.toLocaleDateString('vi-VN')
         });
       }
     } else if (timeframe === 'year') {
@@ -107,8 +109,9 @@ const EnergyTrends: React.FC<EnergyTrendsProps> = ({ entries }) => {
         return {
           label: m,
           value: monthAvg,
-          color: monthAvg > 0 ? 'var(--brand-color)' : '#f1f5f9',
-          date: m
+          color: monthAvg > 0 ? `hsl(${250 - (monthAvg * 40)}, 70%, 60%)` : '#f1f5f9', // Dynamic color for year view
+          date: m,
+          fullDate: `Tháng ${idx + 1}/${year}`
         };
       });
     }
@@ -122,53 +125,49 @@ const EnergyTrends: React.FC<EnergyTrendsProps> = ({ entries }) => {
   }, [entries, timeframe, referenceDate]);
 
   return (
-    <div className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-100 h-full flex flex-col transition-all duration-500">
+    <div className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-100 h-full flex flex-col transition-all duration-500 relative overflow-hidden">
+      {/* Decorative background element */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-brand/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
-        <div className="flex flex-col gap-2 w-full lg:w-auto">
-          <div className="flex items-center justify-between lg:justify-start gap-4">
-             <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">Xu hướng</h2>
-                <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                  <span>{dateRangeLabel}</span>
-                </div>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10 relative z-10">
+        <div>
+           <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase flex items-center gap-2">
+             Xu hướng
+             {currentAverage >= 4 && <span className="text-sm animate-bounce">🔥</span>}
+           </h2>
+           <div className="flex items-center gap-2 mt-1">
+             <div className="flex items-center gap-1 bg-slate-50 rounded-lg p-0.5 border border-slate-100">
+                <button onClick={handlePrev} className="p-1 hover:bg-white rounded-md text-slate-400 hover:text-brand hover:shadow-sm transition-all">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <span className="text-[10px] font-bold text-slate-600 px-2 min-w-[80px] text-center uppercase tracking-wider">{dateRangeLabel}</span>
+                <button onClick={handleNext} className="p-1 hover:bg-white rounded-md text-slate-400 hover:text-brand hover:shadow-sm transition-all">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
              </div>
-             
-             {/* Navigation Controls */}
-             <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-xl">
-               <button onClick={handlePrev} className="p-1.5 hover:bg-white hover:text-brand rounded-lg transition-all text-slate-400">
-                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
-               </button>
-               <button onClick={handleNext} className="p-1.5 hover:bg-white hover:text-brand rounded-lg transition-all text-slate-400">
-                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
-               </button>
-             </div>
-          </div>
+           </div>
         </div>
 
-        <div className="flex flex-col-reverse sm:flex-row items-end sm:items-center gap-3 w-full lg:w-auto">
-          {/* Average Badge */}
-          <div className="flex items-center gap-2 px-4 py-2 bg-brand/5 rounded-2xl border border-brand/10 w-full sm:w-auto justify-between sm:justify-start">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-              TB {timeframe === 'week' ? 'Tuần' : timeframe === 'month' ? 'Tháng' : 'Năm'}
-            </span>
-            <div className="flex items-center gap-1">
-              <span className="text-lg font-black text-brand leading-none">
-                {currentAverage > 0 ? currentAverage.toFixed(1) : '-'}
-              </span>
-              <span className="text-[10px] font-bold text-brand/50 mb-1">v</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+           {/* Average Pill */}
+           <div className="flex flex-col items-end pr-4 border-r border-slate-100">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Trung bình</span>
+              <div className="flex items-baseline gap-0.5">
+                 <span className="text-2xl font-black text-brand">{currentAverage > 0 ? currentAverage.toFixed(1) : '-'}</span>
+                 <span className="text-xs text-slate-300 font-bold">/5</span>
+              </div>
+           </div>
 
-          {/* Tabs */}
-          <div className="flex p-1 bg-slate-50 rounded-2xl border border-slate-100 self-end sm:self-auto w-full sm:w-auto">
+           {/* Timeframe Toggle */}
+           <div className="flex p-1 bg-slate-50/80 backdrop-blur-sm rounded-xl border border-slate-100">
             {(['week', 'month', 'year'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => { setTimeframe(t); setReferenceDate(new Date()); }}
-                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
                   timeframe === t 
-                    ? 'bg-white text-brand shadow-sm border border-slate-100' 
+                    ? 'bg-white text-brand shadow-sm scale-105' 
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
@@ -179,61 +178,68 @@ const EnergyTrends: React.FC<EnergyTrendsProps> = ({ entries }) => {
         </div>
       </div>
 
-      {/* Chart Section - Horizontal Scroll wrapper for mobile */}
-      <div className="relative flex-1 min-h-[220px]">
-        {/* Scrollable Container */}
-        <div className="overflow-x-auto custom-scrollbar h-full pb-2">
-            <div 
-              className="flex items-end gap-1 sm:gap-1.5 md:gap-3 px-1 h-full relative"
-              style={{ minWidth: timeframe === 'month' ? '600px' : '100%' }} 
-            >
-              {/* Grid lines - absolute to the scrollable content to maintain width */}
-              <div className="absolute inset-0 flex flex-col justify-between py-1 pointer-events-none opacity-5 z-0 w-full">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="w-full h-[1px] bg-slate-900"></div>
-                ))}
-              </div>
-
-              {chartData.map((item, idx) => (
-                <div key={`${timeframe}-${idx}`} className="flex-1 flex flex-col items-center group relative h-full justify-end z-10">
-                  <div 
-                    className="w-full rounded-t-lg sm:rounded-t-xl transition-all duration-700 ease-out relative shadow-sm group-hover:shadow-md group-hover:opacity-80"
-                    style={{ 
-                      height: item.value > 0 ? `${(item.value / 5) * 100}%` : '4px', 
-                      backgroundColor: item.color,
-                      minHeight: item.value > 0 ? '10px' : '4px',
-                      transitionDelay: `${idx * 10}ms`
-                    }}
-                  >
-                    {item.value > 0 && (
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[9px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl z-20">
-                        {item.value.toFixed(1)}
-                      </div>
-                    )}
-                  </div>
-                  <span className="mt-2 sm:mt-3 text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase group-hover:text-brand transition-colors whitespace-nowrap">
-                    {item.label}
-                  </span>
+      {/* Chart Area */}
+      <div className="relative flex-1 min-h-[220px] w-full mt-2">
+        {/* Dashed Grid Lines */}
+        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-6">
+            {[5, 4, 3, 2, 1, 0].map((lvl) => (
+                <div key={lvl} className={`w-full border-t flex items-center ${lvl === 0 ? 'border-slate-200' : 'border-slate-100 border-dashed'}`}>
+                   {lvl > 0 && <span className="text-[8px] text-slate-300 font-bold absolute -left-0 -translate-y-1/2 opacity-0 sm:opacity-50">{lvl}</span>}
                 </div>
-              ))}
+            ))}
+        </div>
+
+        {/* Scroll Wrapper for Mobile (Mainly Month View) */}
+        <div className="overflow-x-auto custom-scrollbar h-full absolute inset-0">
+            <div 
+              className="flex items-end h-full px-1 pb-6 gap-1 sm:gap-2 md:gap-3"
+              style={{ minWidth: timeframe === 'month' ? '600px' : '100%' }}
+            >
+               {chartData.map((item, idx) => {
+                 const heightPercent = (item.value / 5) * 100;
+                 const isZero = item.value === 0;
+                 
+                 return (
+                   <div key={`${timeframe}-${idx}`} className="flex-1 h-full flex flex-col justify-end items-center group relative">
+                      
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 pointer-events-none transform translate-y-2 group-hover:translate-y-0">
+                         <div className="bg-slate-800 text-white text-[9px] font-bold py-1.5 px-3 rounded-lg shadow-xl whitespace-nowrap flex flex-col items-center">
+                            <span>{item.fullDate}</span>
+                            {!isZero && <span className="text-brand-light text-xs mt-0.5">{item.value.toFixed(1)}/5</span>}
+                         </div>
+                         <div className="w-2 h-2 bg-slate-800 rotate-45 mx-auto -mt-1"></div>
+                      </div>
+
+                      {/* Bar or Dot */}
+                      <div className="w-full relative flex justify-center items-end h-full">
+                         {isZero ? (
+                           <div className="w-1.5 h-1.5 rounded-full bg-slate-100 mb-0.5 transition-all group-hover:bg-slate-200 group-hover:scale-150" />
+                         ) : (
+                           <div 
+                             className="w-full max-w-[24px] rounded-t-xl rounded-b-md transition-all duration-700 ease-out relative shadow-sm group-hover:shadow-md group-hover:brightness-110 opacity-90 hover:opacity-100"
+                             style={{ 
+                                height: `${heightPercent}%`, 
+                                backgroundColor: item.color,
+                                boxShadow: timeframe === 'year' ? 'none' : `0 4px 12px -2px ${item.color}60`
+                             }}
+                           >
+                             {/* Glossy highlight effect on top of bar */}
+                             <div className="absolute top-1 left-1 right-1 h-[20%] bg-white/20 rounded-t-lg pointer-events-none"></div>
+                           </div>
+                         )}
+                      </div>
+
+                      {/* X-Axis Label */}
+                      <span className={`absolute -bottom-0 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider transition-colors mt-2 ${
+                        isZero ? 'text-slate-300' : 'text-slate-500 group-hover:text-brand'
+                      }`}>
+                        {item.label}
+                      </span>
+                   </div>
+                 );
+               })}
             </div>
-        </div>
-        
-        {/* Gradient fade for mobile scroll hint (only for Month view) */}
-        {timeframe === 'month' && (
-           <div className="absolute top-0 right-0 bottom-8 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none md:hidden" />
-        )}
-      </div>
-      
-      {/* Footer Legend */}
-      <div className="mt-4 pt-4 border-t border-slate-50 flex flex-wrap justify-center gap-4 sm:gap-6">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-brand"></div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dữ liệu</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-slate-100"></div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-slate-300 uppercase tracking-widest">Trống</span>
         </div>
       </div>
     </div>
