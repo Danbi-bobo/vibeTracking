@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { JournalEntry, ENERGY_META, THEMES, Theme } from './types';
 import EnergyHeatmap from './components/EnergyHeatmap';
@@ -154,18 +153,18 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen pb-32 bg-[#fcfdff]">
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm/50">
-        <div className="max-w-4xl mx-auto p-4 md:px-8 flex flex-col gap-4">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-100 shadow-sm transition-all duration-300">
+        <div className="max-w-4xl mx-auto px-4 py-3 md:px-8 flex flex-col gap-3">
           
           {/* Top Row: Logo and Settings */}
           <div className="flex justify-between items-center w-full">
-            <div className="flex items-center gap-6">
-              <h1 className="text-xl font-black text-slate-900 tracking-tighter cursor-default">
+            <div className="flex items-center gap-2 md:gap-6">
+              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tighter cursor-default">
                 Vibe<span className="text-brand">Track</span>
               </h1>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="hidden md:flex items-center gap-2 bg-slate-50 p-1.5 rounded-full border border-slate-100">
                 {THEMES.map(theme => (
                   <button
@@ -193,24 +192,24 @@ const App: React.FC = () => {
 
           {/* Bottom Row: Controls (Streak, Check-in, Avg) */}
           <div className="w-full">
-            <div className="flex items-center bg-slate-50/50 p-1.5 rounded-2xl border border-slate-100 gap-2 shadow-inner w-full">
+            <div className="flex items-center bg-slate-50 p-1 rounded-2xl border border-slate-100 gap-1.5 shadow-inner w-full">
               {/* Streak */}
-              <div className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-50 flex-1 justify-center">
+              <div className="flex items-center gap-1.5 px-2 md:px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-50 flex-1 justify-center min-w-0">
                 <span className="text-sm">🔥</span>
                 <span className="font-black text-slate-900 text-xs whitespace-nowrap">{streak}d</span>
               </div>
               
-              {/* Action Button - Centered and Prominent */}
+              {/* Action Button */}
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="bg-brand text-white px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-brand-hover transition-all shadow-md shadow-brand active:scale-95 flex items-center justify-center gap-2 flex-[2]"
+                className="bg-brand text-white px-3 md:px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-brand-hover transition-all shadow-md shadow-brand active:scale-95 flex items-center justify-center gap-1.5 flex-[2] min-w-0 overflow-hidden"
               >
-                <span>{!todayEntry ? 'Check-in' : 'Cập nhật'}</span>
+                <span className="truncate">{!todayEntry ? 'Check-in' : 'Cập nhật'}</span>
                 <span className="text-sm">{!todayEntry ? '🚀' : '✨'}</span>
               </button>
 
               {/* Avg Energy */}
-              <div className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-50 flex-1 justify-center">
+              <div className="flex items-center gap-1.5 px-2 md:px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-50 flex-1 justify-center min-w-0">
                 <span className="text-sm">⚡</span>
                 <span className="font-black text-slate-900 text-xs whitespace-nowrap">{avgEnergy}v</span>
               </div>
@@ -220,7 +219,7 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 md:px-8 py-8 space-y-8">
+      <main className="max-w-4xl mx-auto px-4 md:px-8 py-6 space-y-6 md:space-y-8">
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <EnergyHeatmap 
             entries={entries} 
