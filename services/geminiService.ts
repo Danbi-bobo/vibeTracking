@@ -12,7 +12,11 @@ export const generateDailyInsight = async (
 
   const aiPromise = (async () => {
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("Missing VITE_GEMINI_API_KEY");
+      }
+      const ai = new GoogleGenAI({ apiKey });
       const energyLabel = ENERGY_META[energy].label;
       
       // Lấy tối đa 5 ngày gần nhất để làm ngữ cảnh
