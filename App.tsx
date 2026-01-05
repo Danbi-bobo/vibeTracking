@@ -154,15 +154,19 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen pb-32 bg-[#fcfdff]">
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-4xl mx-auto p-4 md:px-8 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <h1 className="text-xl font-black text-slate-900 tracking-tighter">
-              Vibe<span className="text-brand">Track</span>
-            </h1>
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm/50">
+        <div className="max-w-4xl mx-auto p-4 md:px-8 flex flex-col gap-4">
+          
+          {/* Top Row: Logo and Settings */}
+          <div className="flex justify-between items-center w-full">
+            <div className="flex items-center gap-6">
+              <h1 className="text-xl font-black text-slate-900 tracking-tighter cursor-default">
+                Vibe<span className="text-brand">Track</span>
+              </h1>
+            </div>
 
-            <div className="hidden md:flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-full border border-slate-100">
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2 bg-slate-50 p-1.5 rounded-full border border-slate-100">
                 {THEMES.map(theme => (
                   <button
                     key={theme.id}
@@ -187,26 +191,32 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center bg-slate-50/50 p-1 rounded-2xl border border-slate-100 gap-1.5 md:gap-3 shadow-inner">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-xl shadow-sm border border-slate-50">
-                <span className="text-xs">🔥</span>
-                <span className="font-black text-slate-900 text-[11px] whitespace-nowrap">{streak}d</span>
+          {/* Bottom Row: Controls (Streak, Check-in, Avg) */}
+          <div className="w-full">
+            <div className="flex items-center bg-slate-50/50 p-1.5 rounded-2xl border border-slate-100 gap-2 shadow-inner w-full">
+              {/* Streak */}
+              <div className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-50 flex-1 justify-center">
+                <span className="text-sm">🔥</span>
+                <span className="font-black text-slate-900 text-xs whitespace-nowrap">{streak}d</span>
               </div>
+              
+              {/* Action Button - Centered and Prominent */}
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="bg-brand text-white px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-wider hover:bg-brand-hover transition-all shadow-md shadow-brand active:scale-95 flex items-center gap-2"
+                className="bg-brand text-white px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-brand-hover transition-all shadow-md shadow-brand active:scale-95 flex items-center justify-center gap-2 flex-[2]"
               >
                 <span>{!todayEntry ? 'Check-in' : 'Cập nhật'}</span>
                 <span className="text-sm">{!todayEntry ? '🚀' : '✨'}</span>
               </button>
-              {/* Removed 'hidden sm:flex' to show on mobile */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-xl shadow-sm border border-slate-50">
-                <span className="text-xs">⚡</span>
-                <span className="font-black text-slate-900 text-[11px] whitespace-nowrap">{avgEnergy}v</span>
+
+              {/* Avg Energy */}
+              <div className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-50 flex-1 justify-center">
+                <span className="text-sm">⚡</span>
+                <span className="font-black text-slate-900 text-xs whitespace-nowrap">{avgEnergy}v</span>
               </div>
             </div>
           </div>
+
         </div>
       </header>
 
@@ -223,7 +233,7 @@ const App: React.FC = () => {
           <EnergyTrends entries={entries} />
         </section>
 
-        {/* Supportive AI moved to bottom to prevent overlap */}
+        {/* Supportive AI */}
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
           <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-start gap-4">
              <div className="p-3 bg-brand/10 rounded-2xl text-xl">🤖</div>
