@@ -1,63 +1,67 @@
-import { GoogleGenAI } from "@google/genai";
 import { EnergyLevel, ENERGY_META, JournalEntry } from "../types";
 
 export const generateDailyInsight = async (
-  energy: EnergyLevel, 
-  journal: string, 
+  energy: EnergyLevel,
+  journal: string,
   history: JournalEntry[] = []
 ) => {
-  const timeoutPromise = new Promise<string>((resolve) => 
-    setTimeout(() => resolve("Hôm nay bạn đã cố gắng rất nhiều rồi! ✨"), 5000)
-  );
+  const timeoutMessage = "HA'm nay b §­n Ž`Aœ c ¯` g §_ng r §t nhi ¯?u r ¯\"i! ƒo\"\"";
+  const errorMessage = "HA'm nay b §­n Ž`Aœ lAÿm r §t t ¯`t r ¯\"i! Ngh ¯% ng’­i thA'i nAÿo! ƒo\"\"";
+  const fallbackMessage = "C ¯` g §_ng lA¦n nhAc, ngAÿy mai s §« t ¯`t h’­n!";
 
-  const aiPromise = (async () => {
-    try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) {
-        throw new Error("Missing VITE_GEMINI_API_KEY");
-      }
-      const ai = new GoogleGenAI({ apiKey });
-      const energyLabel = ENERGY_META[energy].label;
-      
-      // Lấy tối đa 5 ngày gần nhất để làm ngữ cảnh
-      const recentHistory = history
-        .slice(0, 5)
-        .map(h => `- Ngày ${h.date}: Năng lượng ${ENERGY_META[h.energy].label}, nội dung: "${h.content.substring(0, 50)}..."`)
-        .join('\n');
+  const energyLabel = ENERGY_META[energy].label;
 
-      const prompt = `
-        Bạn là một "Người bạn thân Gen Z" cực kỳ tinh tế, sâu sắc và biết lắng nghe. 
-        Hãy phân tích cảm xúc hôm nay dựa trên nhật ký và so sánh với hành trình vài ngày qua để đưa ra một lời nhận xét/động viên mang tính cá nhân hóa cao.
+  // L §y t ¯`i Ž`a 5 ngAÿy g §n nh §t Ž` ¯Ÿ lAÿm ng ¯_ c §œnh
+  const recentHistory = history
+    .slice(0, 5)
+    .map(
+      (h) =>
+        `- NgAÿy ${h.date}: NŽŸng l’ø ¯œng ${ENERGY_META[h.energy].label}, n ¯Ti dung: "${h.content.substring(0, 50)}..."`
+    )
+    .join("\n");
 
-        THÔNG TIN HÔM NAY:
-        - Năng lượng: ${energyLabel} (${energy}/5)
-        - Nhật ký: "${journal}"
+  const prompt = `
+        B §­n lAÿ m ¯Tt "Ng’ø ¯?i b §­n thA›n Gen Z" c ¯ñc k ¯3 tinh t §¨, sA›u s §_c vAÿ bi §¨t l §_ng nghe. 
+        HAœy phA›n tA-ch c §œm xA§c hA'm nay d ¯ña trA¦n nh §-t kA« vAÿ so sA­nh v ¯>i hAÿnh trAªnh vAÿi ngAÿy qua Ž` ¯Ÿ Ž`’øa ra m ¯Tt l ¯?i nh §-n xAct/Ž` ¯Tng viA¦n mang tA-nh cA­ nhA›n hA3a cao.
 
-        LỊCH SỬ GẦN ĐÂY:
-        ${recentHistory || "Đây là ngày đầu tiên hoặc không có dữ liệu cũ."}
+        THA"NG TIN HA"M NAY:
+        - NŽŸng l’ø ¯œng: ${energyLabel} (${energy}/5)
+        - Nh §-t kA«: "${journal}"
 
-        NHIỆM VỤ:
-        1. Nhận diện xu hướng (ví dụ: Năng lượng đang tăng lên, hay đang có một chuỗi ngày mệt mỏi, hoặc hôm nay là một cú sụt giảm bất ngờ).
-        2. Viết một câu phản hồi ngắn gọn (dưới 40 từ).
-        3. Phong cách: Trẻ trung (Gen Z), chân thành, không sáo rỗng, sử dụng icon phù hợp. 
-        4. Nếu thấy chuỗi ngày mệt mỏi, hãy khuyên họ yêu thương bản thân. Nếu thấy năng lượng đang "on fire", hãy cùng ăn mừng.
+        L ¯SCH S ¯ª G §ÝN Ž?A,Y:
+        ${recentHistory || "Ž?A›y lAÿ ngAÿy Ž` §u tiA¦n ho §úc khA'ng cA3 d ¯_ li ¯Øu cc."}
+
+        NHI ¯+M V ¯:
+        1. Nh §-n di ¯Øn xu h’ø ¯>ng (vA- d ¯: NŽŸng l’ø ¯œng Ž`ang tŽŸng lA¦n, hay Ž`ang cA3 m ¯Tt chu ¯-i ngAÿy m ¯Øt m ¯?i, ho §úc hA'm nay lAÿ m ¯Tt cA§ s ¯t gi §œm b §t ng ¯?).
+        2. Vi §¨t m ¯Tt cA›u ph §œn h ¯"i ng §_n g ¯?n (d’ø ¯>i 40 t ¯®).
+        3. Phong cA­ch: Tr §¯ trung (Gen Z), chA›n thAÿnh, khA'ng sA­o r ¯-ng, s ¯- d ¯ng icon phA1 h ¯œp. 
+        4. N §¨u th §y chu ¯-i ngAÿy m ¯Øt m ¯?i, hAœy khuyA¦n h ¯? yA¦u th’ø’­ng b §œn thA›n. N §¨u th §y nŽŸng l’ø ¯œng Ž`ang "on fire", hAœy cA1ng ŽŸn m ¯®ng.
       `;
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: {
-          temperature: 0.9,
-          topP: 0.95,
-        }
-      });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      return response.text?.trim() || "Cố gắng lên nhé, ngày mai sẽ tốt hơn!";
-    } catch (error) {
-      console.error("Gemini Error:", error);
-      return "Hôm nay bạn đã làm rất tốt rồi! Nghỉ ngơi thôi nào! ✨";
+  try {
+    const response = await fetch("/api/gemini", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API failed: ${response.status}`);
     }
-  })();
 
-  return Promise.race([aiPromise, timeoutPromise]);
+    const data = await response.json();
+    return data.text?.trim() || fallbackMessage;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      return timeoutMessage;
+    }
+    console.error("Gemini Error:", error);
+    return errorMessage;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 };
