@@ -1,13 +1,12 @@
-
+/// <reference types="vite/client" />
 import { createClient } from '@supabase/supabase-js';
 
-// Lấy cấu hình từ biến môi trường
-// Đảm bảo bạn đã cấu hình SUPABASE_URL và SUPABASE_KEY trong file .env hoặc cấu hình deployment
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+// SỬA LỖI: Dùng import.meta.env cho Vite Frontend
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Lỗi: Thiếu cấu hình Supabase (URL hoặc Key). Vui lòng kiểm tra biến môi trường.');
+  console.warn('Cảnh báo: Thiếu cấu hình VITE_SUPABASE_URL hoặc VITE_SUPABASE_KEY. Kiểm tra lại file .env hoặc Environment Variables trên Vercel.');
 }
 
 export const supabase = createClient(supabaseUrl || '', supabaseKey || '');

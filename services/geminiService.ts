@@ -1,4 +1,3 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { EnergyLevel, ENERGY_META, JournalEntry } from "../types";
 
@@ -13,10 +12,7 @@ export const generateDailyInsight = async (
 
   const aiPromise = (async () => {
     try {
-      const apiKey = process.env.API_KEY;
-      if (!apiKey) return "Cố gắng lên nhé, ngày mai sẽ tốt hơn!";
-
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const energyLabel = ENERGY_META[energy].label;
       
       // Lấy tối đa 5 ngày gần nhất để làm ngữ cảnh
