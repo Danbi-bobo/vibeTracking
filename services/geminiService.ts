@@ -5,37 +5,38 @@ export const generateDailyInsight = async (
   journal: string,
   history: JournalEntry[] = []
 ) => {
-  const timeoutMessage = "HA'm nay b §­n Ž`Aœ c ¯` g §_ng r §t nhi ¯?u r ¯\"i! ƒo\"\"";
-  const errorMessage = "HA'm nay b §­n Ž`Aœ lAÿm r §t t ¯`t r ¯\"i! Ngh ¯% ng’­i thA'i nAÿo! ƒo\"\"";
-  const fallbackMessage = "C ¯` g §_ng lA¦n nhAc, ngAÿy mai s §« t ¯`t h’­n!";
+  const timeoutMessage = "Hôm nay bạn đã cố gắng rất nhiều rồi! :)";
+  const errorMessage = "Hôm nay bạn đã làm rất tốt rồi! Nghỉ ngơi nhé! :)";
+  const fallbackMessage = "Cố gắng lên nhé, ngày mai sẽ tốt hơn!";
 
   const energyLabel = ENERGY_META[energy].label;
 
-  // L §y t ¯`i Ž`a 5 ngAÿy g §n nh §t Ž` ¯Ÿ lAÿm ng ¯_ c §œnh
+  // Lấy tối đa 5 ngày gần nhất làm ngữ cảnh
   const recentHistory = history
     .slice(0, 5)
     .map(
       (h) =>
-        `- NgAÿy ${h.date}: NŽŸng l’ø ¯œng ${ENERGY_META[h.energy].label}, n ¯Ti dung: "${h.content.substring(0, 50)}..."`
+        `- Ngày ${h.date}: Năng lượng ${ENERGY_META[h.energy].label}, nội dung: "${h.content.substring(0, 50)}..."`
     )
     .join("\n");
 
   const prompt = `
-        B §­n lAÿ m ¯Tt "Ng’ø ¯?i b §­n thA›n Gen Z" c ¯ñc k ¯3 tinh t §¨, sA›u s §_c vAÿ bi §¨t l §_ng nghe. 
-        HAœy phA›n tA-ch c §œm xA§c hA'm nay d ¯ña trA¦n nh §-t kA« vAÿ so sA­nh v ¯>i hAÿnh trAªnh vAÿi ngAÿy qua Ž` ¯Ÿ Ž`’øa ra m ¯Tt l ¯?i nh §-n xAct/Ž` ¯Tng viA¦n mang tA-nh cA­ nhA›n hA3a cao.
+        Bạn là "người bạn thân Gen Z" tinh tế, sâu sắc và biết lắng nghe.
+        Hãy phân tích cảm xúc hôm nay dựa trên nhật ký và so sánh với hành trình vài ngày qua để đưa ra một lời nhắn động viên mang tính cá nhân.
+        Trả lời bằng tiếng Việt có dấu.
 
-        THA"NG TIN HA"M NAY:
-        - NŽŸng l’ø ¯œng: ${energyLabel} (${energy}/5)
-        - Nh §-t kA«: "${journal}"
+        THÔNG TIN HÔM NAY:
+        - Năng lượng: ${energyLabel} (${energy}/5)
+        - Nhật ký: "${journal}"
 
-        L ¯SCH S ¯ª G §ÝN Ž?A,Y:
-        ${recentHistory || "Ž?A›y lAÿ ngAÿy Ž` §u tiA¦n ho §úc khA'ng cA3 d ¯_ li ¯Øu cc."}
+        LỊCH SỬ GẦN ĐÂY:
+        ${recentHistory || "Đây là ngày đầu tiên hoặc không có dữ liệu cũ."}
 
-        NHI ¯+M V ¯:
-        1. Nh §-n di ¯Øn xu h’ø ¯>ng (vA- d ¯: NŽŸng l’ø ¯œng Ž`ang tŽŸng lA¦n, hay Ž`ang cA3 m ¯Tt chu ¯-i ngAÿy m ¯Øt m ¯?i, ho §úc hA'm nay lAÿ m ¯Tt cA§ s ¯t gi §œm b §t ng ¯?).
-        2. Vi §¨t m ¯Tt cA›u ph §œn h ¯"i ng §_n g ¯?n (d’ø ¯>i 40 t ¯®).
-        3. Phong cA­ch: Tr §¯ trung (Gen Z), chA›n thAÿnh, khA'ng sA­o r ¯-ng, s ¯- d ¯ng icon phA1 h ¯œp. 
-        4. N §¨u th §y chu ¯-i ngAÿy m ¯Øt m ¯?i, hAœy khuyA¦n h ¯? yA¦u th’ø’­ng b §œn thA›n. N §¨u th §y nŽŸng l’ø ¯œng Ž`ang "on fire", hAœy cA1ng ŽŸn m ¯®ng.
+        NHIỆM VỤ:
+        1. Nhận diện xu hướng (ví dụ: năng lượng tăng dần, giảm dần, hay hôm nay sụt giảm).
+        2. Viết 1 câu phản hồi ngắn gọn (dưới 40 từ).
+        3. Phong cách: trẻ trung (Gen Z), chân thành, không sáo rỗng, dùng icon phù hợp.
+        4. Nếu thấy chuỗi ngày mệt mỏi, khuyên bạn yêu thương bản thân. Nếu thấy "on fire", hãy cố gắng động viên.
       `;
 
   const controller = new AbortController();
