@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { JournalEntry, ENERGY_META } from '../types';
 
 interface ViewEntryModalProps {
@@ -21,6 +21,21 @@ const ViewEntryModal: React.FC<ViewEntryModalProps> = ({ entry, onClose, onDelet
   
   // Important: Use T00:00:00 to prevent timezone shifts when parsing date-only strings
   const displayDate = new Date(entry.date + 'T00:00:00');
+  const [activeInsightTab, setActiveInsightTab] = useState<'trend' | 'note'>('trend');
+
+  const insightSections = useMemo(() => {
+    const raw = entry.aiInsight || '';
+    const cleaned = raw.replace(/\*\*/g, '');
+    const marker = /Lời nhắn\s*:/i;
+    if (!marker.test(cleaned)) {
+      return { trend: cleaned.trim(), note: '' };
+    }
+    const [trendPart, notePart] = cleaned.split(marker);
+    return {
+      trend: trendPart.replace(/Xu hướng\s*:/i, '').trim(),
+      note: notePart.trim(),
+    };
+  }, [entry.aiInsight]);
 
   return (
     <div 
@@ -94,25 +109,61 @@ const ViewEntryModal: React.FC<ViewEntryModalProps> = ({ entry, onClose, onDelet
 
             {entry.aiInsight && (
               <div className="relative max-w-lg mx-auto">
-                <div className="relative overflow-hidden rounded-[2.5rem] border border-brand/20 bg-gradient-to-br from-brand/10 via-white to-brand/5 p-8 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.6)]">
+                <div className="relative overflow-hidden rounded-[2.5rem] border border-brand/20 bg-gradient-to-br from-brand/10 via-white to-brand/5 p-7 md:p-8 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.6)]">
                   <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-brand/15 blur-3xl" />
-                  <div className="relative z-10 text-center">
-                    <div className="mb-4 flex items-center justify-center gap-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand/15 text-lg text-brand">
+                  <div className="absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-brand/10 blur-3xl" />
+                  <div className="relative z-10">
+                    <div className="mb-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand/15 text-lg text-brand">
                         ✨
-                      </span>
-                      <div className="text-left">
-                        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand/80">AI Vibe</p>
-                        <p className="text-xs font-semibold text-slate-500">Phân tích cảm xúc</p>
+                        </span>
+                        <div className="text-left">
+                          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand/80">AI Vibe</p>
+                          <p className="text-xs font-semibold text-slate-500">Phân tích cảm xúc</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 rounded-full bg-white/80 p-1 shadow-sm">
+                        <button
+                          type="button"
+                          onClick={() => setActiveInsightTab('trend')}
+                          className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
+                            activeInsightTab === 'trend'
+                              ? 'bg-brand text-white shadow-sm'
+                              : 'text-slate-400 hover:text-slate-600'
+                          }`}
+                        >
+                          Xu hướng
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActiveInsightTab('note')}
+                          className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
+                            activeInsightTab === 'note'
+                              ? 'bg-slate-900 text-white shadow-sm'
+                              : 'text-slate-400 hover:text-slate-600'
+                          }`}
+                        >
+                          Lời nhắn
+                        </button>
                       </div>
                     </div>
-                    <p className="text-base md:text-lg font-semibold text-slate-800 leading-relaxed">
-                      {entry.aiInsight}
-                    </p>
-                    <div className="mt-6 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand/70">
-                      <span className="h-px w-8 bg-brand/30" />
-                      <span>Insight</span>
-                      <span className="h-px w-8 bg-brand/30" />
+                    <div className="rounded-3xl bg-white/80 p-5 md:p-6 shadow-inner">
+                      {activeInsightTab === 'trend' && (
+                        <p className="text-left text-base md:text-lg font-semibold text-slate-800 leading-relaxed">
+                          {insightSections.trend || entry.aiInsight}
+                        </p>
+                      )}
+                      {activeInsightTab === 'note' && (
+                        <p className="text-left text-base md:text-lg font-semibold text-slate-800 leading-relaxed">
+                          {insightSections.note || 'Chưa có lời nhắn riêng trong phản hồi.'}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mt-5 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-brand/70">
+                      <span className="h-px w-12 bg-brand/30" />
+                      <span className="px-3 py-1 rounded-full bg-brand/10 animate-pulse">Insight</span>
+                      <span className="h-px w-12 bg-brand/30" />
                     </div>
                   </div>
                 </div>
