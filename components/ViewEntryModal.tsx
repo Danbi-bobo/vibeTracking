@@ -1,4 +1,3 @@
-
 import React, { useEffect, useCallback } from 'react';
 import { JournalEntry, ENERGY_META } from '../types';
 
@@ -94,18 +93,28 @@ const ViewEntryModal: React.FC<ViewEntryModalProps> = ({ entry, onClose, onDelet
             </div>
 
             {entry.aiInsight && (
-              <div className="bg-brand/5 border border-brand/10 p-8 rounded-[2.5rem] relative overflow-hidden group max-w-lg mx-auto">
-                <div className="relative z-10 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-3">
-                    <span className="text-xl animate-bounce">✨</span>
-                    <p className="text-[10px] font-black text-brand uppercase tracking-[0.2em] opacity-80">Phân tích từ AI</p>
+              <div className="relative max-w-lg mx-auto">
+                <div className="relative overflow-hidden rounded-[2.5rem] border border-brand/20 bg-gradient-to-br from-brand/10 via-white to-brand/5 p-8 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.6)]">
+                  <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-brand/15 blur-3xl" />
+                  <div className="relative z-10 text-center">
+                    <div className="mb-4 flex items-center justify-center gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand/15 text-lg text-brand">
+                        ✨
+                      </span>
+                      <div className="text-left">
+                        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand/80">AI Vibe</p>
+                        <p className="text-xs font-semibold text-slate-500">Phân tích cảm xúc</p>
+                      </div>
+                    </div>
+                    <p className="text-base md:text-lg font-semibold text-slate-800 leading-relaxed">
+                      {entry.aiInsight}
+                    </p>
+                    <div className="mt-6 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand/70">
+                      <span className="h-px w-8 bg-brand/30" />
+                      <span>Insight</span>
+                      <span className="h-px w-8 bg-brand/30" />
+                    </div>
                   </div>
-                  <p className="text-lg font-bold text-slate-800 leading-relaxed">
-                    {entry.aiInsight}
-                  </p>
-                </div>
-                <div className="absolute top-0 right-0 p-4 text-brand/5 group-hover:text-brand/10 transition-colors pointer-events-none">
-                   <svg className="w-24 h-24 rotate-12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
                 </div>
               </div>
             )}
